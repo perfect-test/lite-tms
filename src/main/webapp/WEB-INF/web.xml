@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <servlet>
+        <servlet-name>Get projects handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.projects.GetProjectsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Get projects handler</servlet-name>
+        <url-pattern>/api/v1/projects/get_projects</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Get project handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.projects.GetProjectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Get project handler</servlet-name>
+        <url-pattern>/api/v1/projects/get_project</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Create new project handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.projects.CreateProjectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Create new project handler</servlet-name>
+        <url-pattern>/api/v1/projects/create</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Update project hadnler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.projects.UpdateProjectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Update project hadnler</servlet-name>
+        <url-pattern>/api/v1/projects/update</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Delete project hadnler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.projects.DeleteProjectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Delete project hadnler</servlet-name>
+        <url-pattern>/api/v1/projects/delete</url-pattern>
+    </servlet-mapping>
+
+    <!--suites servlets-->
+
+    <servlet>
+        <servlet-name>Get suites handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.suites.GetSuitesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Get suites handler</servlet-name>
+        <url-pattern>/api/v1/suites/get_suites</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Update suite handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.suites.UpdateSuiteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Update suite handler</servlet-name>
+        <url-pattern>/api/v1/suites/update</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Delete suite handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.suites.DeleteSuiteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Delete suite handler</servlet-name>
+        <url-pattern>/api/v1/suites/delete</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>Create suite handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.suites.CreateSuiteServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Create suite handler</servlet-name>
+        <url-pattern>/api/v1/suites/create</url-pattern>
+    </servlet-mapping>
+
+
+    <!--cases servlets-->
+
+    <servlet>
+        <servlet-name>Get cases handler</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.cases.GetCasesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Get cases handler</servlet-name>
+        <url-pattern>/api/v1/cases/get_cases</url-pattern>
+    </servlet-mapping>
+
+
+
+
+
+
+
+    <servlet>
+        <servlet-name>Healthcheck</servlet-name>
+        <servlet-class>com.perfecttest.tms.servlet.HealthCheckServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Healthcheck</servlet-name>
+        <url-pattern>/_health</url-pattern>
+    </servlet-mapping>
+</web-app>

@@ -1,0 +1,13 @@
+version: '2'
+
+services:
+
+  swagger:
+    image: registry.rtty.in/qa/swagger-ui-builder:1.1
+    ports:
+      - "9999:8080"
+    volumes:
+      - ./config:/usr/share/nginx/html/swagger
+
+
+

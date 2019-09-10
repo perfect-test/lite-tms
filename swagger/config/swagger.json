@@ -1,0 +1,367 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This is swagger tool implementation for \"Events-logger\" (e-logger.rtty.in)",
+    "version": "1.0.0",
+    "title": "Events-logger",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "email": "apiteam@swagger.io"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "e-logger.rtty.in",
+  "schemes": [
+    "http"
+  ],
+  "tags": [
+    {
+      "name": "API"
+    }
+  ],
+  "paths": {
+    "/api/v1/event": {
+      "post": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Add event",
+        "description": "Добавление нового события в систему логирования",
+        "operationId": "add",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/AddEventRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok"
+          }
+        }
+      }
+    },
+    "/api/v1/events_filters": {
+      "get": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Events filters",
+        "description": "Получение всех возможных вариантов значений: \"Component \", \"Network\", \"Type\" текущих записей в таблице (для формирования фильтров)",
+        "operationId": "health",
+        "produces": [
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "$ref": "#/definitions/EventsFilters"
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/graph": {
+      "get": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Получение событий и графика Revenue за указанный период времени",
+        "description": "Получение событий и графика Revenue за указанный период времени",
+        "operationId": "health",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "from",
+            "required": false,
+            "type": "string",
+            "description": "Дата/время начала запрашиваемого периода (YYYY-MM-DDThh:mm:ss)"
+          },
+          {
+            "in": "path",
+            "name": "to",
+            "required": false,
+            "type": "string",
+            "description": "Дата/время конца запрашиваемого периода (YYYY-MM-DDThh:mm:ss)"
+          },
+          {
+            "in": "path",
+            "name": "component",
+            "required": false,
+            "type": "string",
+            "description": "Фильтр событий по \"component\" (через запятую)"
+          },
+          {
+            "in": "path",
+            "name": "network",
+            "required": false,
+            "type": "string",
+            "description": "Фильтр событий по \"network\" (через запятую)"
+          },
+          {
+            "in": "path",
+            "name": "type",
+            "required": false,
+            "type": "string",
+            "description": "Фильтр событий по \"type\" (через запятую)"
+          },
+          {
+            "in": "path",
+            "name": "show_revenue",
+            "required": false,
+            "type": "boolean",
+            "description": "Фильтр событий по \"type\" (через запятую)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Ok",
+            "schema": {
+              "$ref": "#/definitions/GraphEventsData"
+            }
+          }
+        }
+      }
+    },
+    "/_health": {
+      "get": {
+        "tags": [
+          "API"
+        ],
+        "summary": "Check health",
+        "description": "Проверка работы сервера \"Event-logger\"",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "Ok"
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "Find out more about Swagger",
+    "url": "http://swagger.io"
+  },
+  "definitions": {
+    "AddEventRequest": {
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "deploy"
+        },
+        "component": {
+          "type": "string",
+          "example": "delivery"
+        },
+        "release": {
+          "type": "string",
+          "example": "1.0"
+        },
+        "start_time": {
+          "type": "string",
+          "example": "YYYY-MM-DD hh:mm:ss"
+        },
+        "finish_time": {
+          "type": "string",
+          "example": "YYYY-MM-DD hh:mm:ss"
+        },
+        "network": {
+          "type": "string",
+          "example": "propeller"
+        },
+        "host": {
+          "type": "string",
+          "example": "all"
+        },
+        "user": {
+          "type": "string",
+          "example": "a.afrikanov"
+        },
+        "comment": {
+          "type": "string",
+          "example": "test comment"
+        },
+        "tag": {
+          "type": "string",
+          "example": "test tag"
+        }
+      },
+      "xml": {
+        "name": "AddEventRequest"
+      }
+    },
+    "EventsFilters": {
+      "type": "object",
+      "properties": {
+        "components": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "networks": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eventTypes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "xml": {
+        "name": "EventsFilters"
+      }
+    },
+    "GraphEventsData": {
+      "type": "object",
+      "properties": {
+        "events": {
+          "type": "array",
+          "items" : {
+            "type": "object",
+            "schema": {
+              "$ref": "#/definitions/Event"
+            }
+          }
+        },
+        "graphData": {
+          "type": "object",
+          "schema": {
+            "$ref": "#/definitions/GraphData"
+          }
+        }
+      },
+      "xml": {
+        "name": "GraphEventsData"
+      }
+    },
+    "GraphData" : {
+      "type" : "object",
+      "properties": {
+        "events" : {
+          "type" : "array",
+          "items" : {
+            "type": "object",
+            "schema": {
+              "$ref": "#/definitions/GraphDataSet"
+            }
+          }
+        },
+        "incidents" : {
+          "type" : "array",
+          "items" : {
+            "type": "object",
+            "schema": {
+              "$ref": "#/definitions/GraphDataSet"
+            }
+          }
+        },
+        "revenue" : {
+          "type" : "array",
+          "items" : {
+            "type": "object",
+            "schema": {
+              "$ref": "#/definitions/GraphDataSet"
+            }
+          }
+        }
+      }
+    },
+    "GraphDataSet": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "data_set": {
+          "type": "array",
+          "items" : {
+            "type" : "object",
+            "schema": {
+              "$ref": "#/definitions/GraphPoint"
+            }
+          }
+        }
+      },
+      "xml": {
+        "name": "GraphDataSet"
+      }
+    },
+    "GraphPoint": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "string"
+        },
+        "y": {
+          "type": "number"
+        }
+      },
+      "xml": {
+        "name": "GraphPoint"
+      }
+    },
+    "Event": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "start_time": {
+          "type": "string"
+        },
+        "finish_time": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        },
+        "network": {
+          "type": "string"
+        },
+        "project": {
+          "type": "string"
+        },
+        "release": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "user": {
+          "type": "string"
+        },
+        "comment": {
+          "type": "string"
+        },
+        "tag": {
+          "type": "string"
+        }
+      },
+      "xml": {
+        "name": "Event"
+      }
+    }
+
+  }
+}
+

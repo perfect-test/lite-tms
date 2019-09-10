@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Metahash test cases</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+            integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+
+        });
+
+
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="index.html">Lite TMS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <span class="nav-link">Metahash project</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Tests and suites</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="metahash-runs.html">Runs</a>
+            </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <span style="padding-left: 30px; padding-right: 20px">Mikhail Sidelnikov</span>
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Logout</button>
+        </form>
+
+    </div>
+</nav>
+
+<div>
+
+    <div style="padding-top: 30px; padding-left: 30px;font-size: 14px; ">
+        <div class="row">
+            <div class="col-4">
+                <div class="list-group" id="list-tab" role="tablist">
+                    <a class="list-group-item list-group-item-action " id="suite_title_1" data-toggle="list"
+                       href="#project_1" role="tab" aria-controls="home">Регистрация пользователя<span
+                            class="badge badge-primary" style="float: right">4</span></a>
+                    <a class="list-group-item list-group-item-action" id="suite_title_2" data-toggle="list"
+                       href="#project_2" role="tab" aria-controls="profile">Платежи через карту<span
+                            class="badge badge-primary" style="float: right">7</span></a>
+                    <a class="list-group-item list-group-item-action" id="suite_title_3" data-toggle="list"
+                       href="#project_3" role="tab" aria-controls="messages">Роли пользователей<span
+                            class="badge badge-primary" style="float: right">3</span></a>
+                    <a class="list-group-item list-group-item-action" id="suite_title_4" data-toggle="list"
+                       href="#project_4" role="tab" aria-controls="settings">Тест кейсы на языки<span
+                            class="badge badge-primary" style="float: right">4</span></a>
+                </div>
+            </div>
+            <div class="col-7" style=" padding-left: 25px">
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="project_1" role="tabpanel"
+                         aria-labelledby="list-home-list">
+                        <div class="list-group" id="project_1_cases" role="tablist">
+                            <a class="list-group-item list-group-item-action " id="case_1_title_1"
+                               data-toggle="list" href="#project_1" role="tab" aria-controls="home">Успешная регистрация
+                                пользователя</a>
+                            <a class="list-group-item list-group-item-action" id="case_1_title_2" data-toggle="list"
+                               href="#project_2" role="tab" aria-controls="profile">Неуспешна регистрация</a>
+                            <a class="list-group-item list-group-item-action" id="case_1_title_3" data-toggle="list"
+                               href="#project_3" role="tab" aria-controls="messages">Регистрация на несуществующий
+                                емейл</a>
+                            <a class="list-group-item list-group-item-action" id="case_1_title_4" data-toggle="list"
+                               href="#project_4" role="tab" aria-controls="settings">Регистрация в разных браузерах</a>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="project_2" role="tabpanel" aria-labelledby="list-profile-list">
+                        <div class="list-group" id="project_2_cases" role="tablist">
+                            <a class="list-group-item list-group-item-action " id="case_2_title_1"
+                               data-toggle="list" href="#project_1" role="tab" aria-controls="home">Платежи через
+                                mastercard</a>
+                            <a class="list-group-item list-group-item-action" id="case_2_title_2" data-toggle="list"
+                               href="#project_2" role="tab" aria-controls="profile">Платежи через apple pay</a>
+                            <a class="list-group-item list-group-item-action" id="case_2_title_3" data-toggle="list"
+                               href="#project_3" role="tab" aria-controls="messages">Платежи через робокассу через
+                                терминал</a>
+                            <a class="list-group-item list-group-item-action" id="case_2_title_4" data-toggle="list"
+                               href="#project_4" role="tab" aria-controls="settings">Неуспешный платеж: не указан cvc
+                                код</a>
+                            <a class="list-group-item list-group-item-action" id="case_2_title_5" data-toggle="list"
+                               href="#project_4" role="tab" aria-controls="settings">Неуспешный платеж: не указан cvc
+                                код</a>
+
+                            <a class="list-group-item list-group-item-action" id="case_2_title_6" data-toggle="list"
+                               href="#project_4" role="tab" aria-controls="settings">Неуспешный платеж: не указан cvc
+                                код</a>
+
+                            <a class="list-group-item list-group-item-action" id="case_2_title_7" data-toggle="list"
+                               href="#project_4" role="tab" aria-controls="settings">Неуспешный платеж: не указан cvc
+                                код</a>
+
+                        </div>
+
+                    </div>
+                    <div class="tab-pane fade" id="project_3" role="tabpanel" aria-labelledby="list-messages-list">
+                        <div class="list-group" id="project_3_cases" role="tablist">
+                            <a class="list-group-item list-group-item-action " id="case_3_title_1"
+                               data-toggle="list" href="#project_1" role="tab" aria-controls="home">Права: Админ
+                                пользователь</a>
+                            <a class="list-group-item list-group-item-action" id="case_3_title_2" data-toggle="list"
+                               href="#project_2" role="tab" aria-controls="profile">Права: гость</a>
+                            <a class="list-group-item list-group-item-action" id="case_3_title_3" data-toggle="list"
+                               href="#project_3" role="tab" aria-controls="messages">Права: неполные админские права</a>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="project_4" role="tabpanel" aria-labelledby="list-settings-list">
+                        <div class="list-group" id="project_4_cases" role="tablist">
+                            <a class="list-group-item list-group-item-action " id="case_4_title_1"
+                               data-toggle="list" href="#project_1" role="tab" aria-controls="home">Перевод всех страниц
+                                на китайский</a>
+                            <a class="list-group-item list-group-item-action" id="case_4_title_2" data-toggle="list"
+                               href="#project_2" role="tab" aria-controls="profile">Перевод всех страниц на
+                                английский</a>
+                            <a class="list-group-item list-group-item-action" id="case_4_title_3" data-toggle="list"
+                               href="#project_3" role="tab" aria-controls="messages">Перевод всех страниц на русский</a>
+                            <a class="list-group-item list-group-item-action" id="case_4_title_4" data-toggle="list"
+                               href="#project_4" role="tab" aria-controls="settings">Перевод всех страниц на
+                                японский</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-7" style="padding-top: 25px;padding-left: 35px">
+                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#newSuiteModal">
+                    Add test suite
+                </button>
+                <button style="margin-left: 20px" type="button" class="btn btn-outline-success" data-toggle="modal"
+                        data-target="#newCaseModal">Add test case
+                </button>
+            </div>
+            <div>
+                <div class="card " style="margin-left: 15px; margin-top: 40px; margin-bottom: 40px; max-width: 1000px">
+                    <div class="card-header " style="font-weight: 600; font-size: 15px">
+                        Перевод страниц на китайский
+                    </div>
+                    <div class="card-body">
+                        <h6>Case info</h6>
+                        <button type="button" class="btn btn-primary btn-sm" disabled="disabled">Medium</button>
+                        <button type="button" class="btn btn-dark btn-sm" disabled="disabled">Automated</button>
+                        <button type="button" class="btn btn-info btn-sm" disabled="disabled">M.Sidelnikov</button>
+
+                        <hr>
+                        <h6>Requirement references</h6>
+                        <div>
+                            <a href="http://ya.ru">Требования: Китайский язык</a>
+                        </div>
+
+                        <div>
+                            <a href="http://ya.ru">Требования: Поиск</a>
+                        </div>
+
+                        <hr>
+                        <h6>Description</h6>
+                        <p class="card-text">Тест проверяет перевод текстов на странице на китайский язык : все
+                            страницы.</p>
+                        <hr>
+                        <h6>Preconditions</h6>
+                        <p class="card-text">Пользователь залогинен в системе.</p>
+                        <hr>
+                        <h6>Steps</h6>
+                        <table class="table table-bordered">
+                            <thead class="thead-light">
+                            <tr>
+                                <th class="text-center" style="width: 50%" scope="col">Step</th>
+                                <th class="text-center" style="width: 50%" scope="col">Expected Result</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td>Логинимся в сервис под пользователем admin/amdin</td>
+                                <td>Пользователь залогинен в системе: в header отображается логотип пользователя</td>
+                            </tr>
+                            <tr>
+                                <td>Кликаем на меню изменения языка и выбираем китайский язык</td>
+                                <td>Все тексты на странице переведены на китайский язык</td>
+                            </tr>
+                            <tr>
+                                <td>Переходим на страницу поиска элементов</td>
+                                <td>На странице присутствуют блоки: реклама, элементы объявлений. Все тексты в блоках
+                                    переведены на китайский. Ни в одном месте не встречается английский
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+
+
+                        <hr>
+                        <h6>Updated</h6>
+                        <p class="card-text">19.04.2018 19:00</p>
+                        <button class="btn btn-info" data-toggle="modal"
+                                data-target="#newCaseModal">Edit
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="newSuiteModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="suiteModalLabel">Create new test suite</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Suite name:</h6>
+                <input type="text" class="form-control" id="basic-url" aria-describedby="basic-addon3"
+                       placeholder="Enter your suite name here"/>
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          placeholder="Enter your suite description here"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="newCaseModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="caseModalLabel">Create new test case</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Case info:</h6>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Priority
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Critical</a>
+                        <a class="dropdown-item" href="#">Medium</a>
+                        <a class="dropdown-item" href="#">Low</a>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-left: 20px">
+                    <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Type
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Automated</a>
+                        <a class="dropdown-item" href="#">Manual</a>
+                    </div>
+                </div>
+                <hr>
+                <h6>Requirement references:</h6>
+                <div>
+                    <a style="margin-top: 5px" href="http://ya.ru">Требования: Поиск</a>
+                    <div style="float: right; padding-right: 150px">
+                        <button type="button" class="btn btn-info btn-sm">Edit</button>
+                        <button type="button" class="btn btn-danger btn-sm">Delete</button>
+                    </div>
+
+                </div>
+
+                <div style="margin-top: 20px" class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="">Reference link</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Url"/>
+                    <input type="text" class="form-control" placeholder="Display value"/>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" style="margin-top: 10px">Add reference</button>
+                <hr>
+                <h6>Case name:</h6>
+                <input type="text" class="form-control" aria-describedby="basic-addon3"
+                       placeholder="Enter your test case name here"/>
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          placeholder="Enter your test case description here"></textarea>
+                <hr>
+                <h6>Preconditions:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          placeholder="Enter your test case preconditions here"></textarea>
+                <hr>
+                <h6>Steps:</h6>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                    <tr>
+                        <th class="text-center" style="width: 50%" scope="col">Step</th>
+                        <th class="text-center" style="width: 50%" scope="col">Expected Result</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Логинимся в сервис под пользователем admin/amdin</td>
+                        <td>Пользователь залогинен в системе: в header отображается логотип пользователя</td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="form-control" aria-label="With textarea"
+                                      placeholder="Enter step here"></textarea></td>
+                        <td><textarea class="form-control" aria-label="With textarea"
+                                      placeholder="Enter expected result here"></textarea></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary btn-sm">Add step</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>

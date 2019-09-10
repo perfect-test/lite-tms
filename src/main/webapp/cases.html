@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test cases for project</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script type="text/javascript" src="js/utils.js"></script>
+
+    <style>
+        .suite-element {
+            cursor: pointer;
+        }
+
+        .case-element {
+            cursor: pointer;
+        }
+
+        #casesList .active {
+            color: white;
+        }
+
+        #suitesList .active {
+            color: white;
+        }
+    </style>
+
+
+    <script type="text/javascript">
+
+        var currentProject = undefined;
+
+
+        function getProject(projectId) {
+            setLoadingDataProgressBarVisible(true);
+            var project = undefined;
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/projects/get_project?projectId=' + projectId,
+                async: false,
+                dataType: 'text',
+                cache: false,
+                success: function (data) {
+                    setLoadingDataProgressBarVisible(false);
+                    project = jQuery.parseJSON(data);
+                },
+                error: function (error) {
+                    setLoadingDataProgressBarVisible(false);
+                    showErrorMessage("Error while get Project. Please, try to refresh your page or check requests in console.");
+                }
+            });
+            return project;
+        }
+
+
+        function getProjectId() {
+            var projectId = getUrlParameter('projectId');
+            console.log("Project id: " + projectId);
+            return projectId;
+        }
+
+        function setLoadingDataProgressBarVisible(isVisible) {
+            var progressBar = $("#loadingDataProgressBar");
+            if (isVisible) {
+                progressBar.show();
+            } else {
+                progressBar.hide();
+            }
+        }
+
+        function showErrorMessage(message) {
+            $("#errorMessage").text(message);
+            window.setTimeout(function () {
+                $("#errorMessage").hide();
+            }, 4000);
+        }
+
+        function getSuites(projectId) {
+            setLoadingDataProgressBarVisible(true);
+            var suites = undefined;
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/suites/get_suites?projectId=' + projectId,
+                async: false,
+                dataType: 'text',
+                cache: false,
+                success: function (data) {
+                    setLoadingDataProgressBarVisible(false);
+                    suites = jQuery.parseJSON(data);
+                },
+                error: function (error) {
+                    setLoadingDataProgressBarVisible(false);
+                    showErrorMessage("Error while get suites for project. Please, try to refresh your page or check requests in console.");
+                }
+            });
+            return suites;
+        }
+
+        function getCases(suiteId) {
+            setLoadingDataProgressBarVisible(true);
+            var cases = undefined;
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/cases/get_cases?suiteId=' + suiteId,
+                async: false,
+                dataType: 'text',
+                cache: false,
+                success: function (data) {
+                    setLoadingDataProgressBarVisible(false);
+                    cases = jQuery.parseJSON(data);
+                },
+                error: function (error) {
+                    setLoadingDataProgressBarVisible(false);
+                    showErrorMessage("Error while get cases for suite. Please, try to refresh your page or check requests in console.");
+                }
+            });
+            return cases;
+        }
+
+        function showSuites(resultDataObjects) {
+            var suitesListElement = $("#suitesList");
+            suitesListElement.empty();
+            $.each(resultDataObjects, function (index, dataObject) {
+                suitesListElement.append(getSuiteElement(dataObject));
+            })
+        }
+
+        function setNewSuiteButtonVisible(isVisible) {
+            var element = $("#newSuiteButton");
+            if (isVisible) {
+                element.show();
+            } else {
+                element.hide();
+            }
+        }
+
+        function setNewCaseButtonVisible(isVisible) {
+            var element = $("#newCaseButton");
+            if (isVisible) {
+                element.show();
+            } else {
+                element.hide();
+            }
+        }
+
+        function initSuitesAndCases(projectId) {
+            var result = [];
+            var suites = getSuites(projectId);
+            if (suites !== undefined) {
+                $.each(suites, function (index, suite) {
+                    var cases = getCases(suite.id);
+                    if (cases !== undefined) {
+                        result.push({
+                            "suite": suite,
+                            "cases": cases
+                        });
+                    }
+                });
+            }
+            if (result.length > 0) {
+                showSuites(result);
+                $("#newButtonsContainer").show();
+                setNewSuiteButtonVisible(true);
+                setCasesListVisible(false);
+                setNewCaseButtonVisible(false);
+            } else {
+                alert("Show message here");
+            }
+
+        }
+
+        function initProjectInfo() {
+            var projectId = getProjectId();
+            if (projectId !== undefined) {
+                var project = getProject(projectId);
+                if (project !== undefined) {
+                    currentProject = project;
+                    var projectName = project.name;
+                    document.title = "`" + projectName + "` test cases";
+                    $("#navbarProjectName").text(projectName);
+                    $("#runsLink").attr("href", "runs.html?projectId=" + projectId);
+                    initSuitesAndCases(projectId);
+                }
+            } else {
+                showErrorMessage("Error while reading project id from url. Please check it is valid or contact administrators.");
+            }
+        }
+
+
+        function getCasesCountText(dataObject) {
+            if (dataObject.cases !== undefined) {
+                return dataObject.cases.length + " cases";
+            } else {
+                return "No cases found";
+            }
+        }
+
+        function setAllSuitesNonActive() {
+            $("#suitesList").find("a").each(function () {
+                $(this).removeClass("active");
+                $(this).find("button")
+                    .removeClass("btn-outline-dark")
+                    .addClass("btn-outline-info");
+            })
+        }
+
+        function setEditSuiteModalData(suite) {
+            $("#editSuiteNameInput").val(suite.name);
+            $("#editSuiteShortDescriptionInput").val(suite.shortDescription);
+            $("#editSuiteDescriptionInput").val(suite.description);
+            $("#editModalSuiteId").text(suite.id);
+        }
+
+        function setCasesListVisible(isVisible) {
+            var element = $("#casesContainer");
+            if (isVisible) {
+                element.show();
+            } else {
+                element.hide();
+            }
+        }
+
+        function getSuiteElement(dataObject) {
+            return $("<a></a>")
+                .addClass("suite-element")
+                .addClass("list-group-item")
+                .addClass("list-group-item-action")
+                .addClass("flex-column")
+                .addClass("align-items-start")
+                .append(
+                    $("<div></div>")
+                        .addClass("d-flex")
+                        .addClass("w-100")
+                        .addClass("justify-content-between")
+                        .append($("<h6></h6>")
+                            .css("margin-top", "3px")
+                            .addClass("mb-1")
+                            .text(dataObject.suite.name)
+                        )
+                        .append($("<span></span>")
+                            .css("margin-top", "7px")
+                            .css("margin-bottom", "5px")
+                            .addClass("badge")
+                            .addClass("badge-info")
+                            .text(getCasesCountText(dataObject))
+                        ),
+                    $("<p></p>")
+                        .addClass("mb-1")
+                        .text(dataObject.suite.shortDescription),
+                    $("<small></small>")
+                        .text(dataObject.suite.description),
+                    $("<div></div>")
+                        .css("padding-top", "10px")
+                        .append(
+                            $("<button></button>")
+                                .addClass("btn")
+                                .addClass("btn-outline-info")
+                                .addClass("btn-sm")
+                                .attr("data-toggle", "modal")
+                                .attr("data-target", "#editSuiteModal")
+                                .text("Edit")
+                                .on("click", function (e) {
+                                    e.preventDefault();
+                                    setEditSuiteModalData(dataObject.suite);
+                                })
+                        ),
+                    $("<div></div>")
+                        .css("display", "none")
+                        .attr("id", dataObject.suite.id)
+                )
+
+                .on("click", function (e) {
+                    e.preventDefault();
+                    setAllSuitesNonActive();
+                    $(this).addClass("active");
+                    $(this)
+                        .find("button")
+                        .addClass("btn-outline-dark")
+                        .removeClass("btn-outline-info");
+                    setNewCaseButtonVisible(true);
+                    setCasesListVisible(true);
+                    initCases(dataObject);
+                });
+        }
+
+        function setAllCasesNonActive() {
+            $("#casesList").find("a").each(function () {
+                $(this).removeClass("active");
+            })
+        }
+
+        function initCases(suiteDataObject) {
+            var casesElement = $("#casesList");
+            casesElement.empty();
+            var casesList = suiteDataObject.cases;
+            if (casesList !== undefined && casesList.length > 0) {
+                $.each(suiteDataObject.cases, function (index, caseObject) {
+                    casesElement.append(
+                        $("<a></a>")
+                            .addClass("list-group-item")
+                            .addClass("list-group-item-action")
+                            .addClass("case-element")
+                            .text(caseObject.name)
+                            .on("click", function (e) {
+                                e.preventDefault();
+                                setAllCasesNonActive();
+                                $(this).addClass("active");
+                            }));
+                });
+            }
+        }
+
+        function setEditPopupProgressBarVisible(isVisible) {
+            var progressBar = $("#editSuitePopupProgressBar");
+            if (isVisible) {
+                progressBar.show();
+            } else {
+                progressBar.hide();
+            }
+        }
+
+
+        function showEditSuiteModalSuccessMessage(isHidePopup, message) {
+            var messageElement = $("#successEditSuiteModalMessage");
+            messageElement.text(message);
+            messageElement.show();
+            window.setTimeout(function () {
+                messageElement.hide();
+                if (isHidePopup) {
+                    $("#editSuiteModal").modal('hide');
+                    initProjectInfo();
+                }
+            }, 1000);
+        }
+
+
+        function updateSuite(suite) {
+            setEditPopupProgressBarVisible(true);
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8080/api/v1/suites/update',
+                data: JSON.stringify(suite),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditSuiteModalSuccessMessage(false, "Suite successfully updated");
+                },
+                error: function (error) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditSuiteModalErrorMessage("Error while update suite. Try again.");
+                }
+            });
+        }
+
+        function saveUpdatedSuite() {
+            updateSuite({
+                name: $("#editSuiteNameInput").val(),
+                shortDescription: $("#editSuiteShortDescriptionInput").val(),
+                description: $("#editSuiteDescriptionInput").val(),
+                id: $("#editModalSuiteId").text()
+            });
+        }
+
+        function sendDeleteSuite(suite) {
+            setEditPopupProgressBarVisible(true);
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8080/api/v1/suites/delete',
+                data: JSON.stringify(suite),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditSuiteModalSuccessMessage(true, "Suite successfully deleted");
+                },
+                error: function (error) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditSuiteModalErrorMessage("Error while delete suite. Please try again.");
+                }
+            });
+
+        }
+
+        function showEditSuiteModalErrorMessage(message) {
+            var messageElement = $("#failedEditSuiteModalMessage");
+            messageElement.text(message);
+            messageElement.show();
+            window.setTimeout(function () {
+                messageElement.hide();
+            }, 2000);
+        }
+
+        function deleteSuite() {
+            sendDeleteSuite({
+                name: $("#editSuiteNameInput").val(),
+                shortDescription: $("#editSuiteShortDescriptionInput").val(),
+                description: $("#editSuiteDescriptionInput").val(),
+                id: $("#editModalSuiteId").text()
+            });
+        }
+
+        function saveNewSuite() {
+            sendSaveSuite({
+                name: $("#newSuiteNameInput").val(),
+                shortDescription: $("#newSuiteShortDescriptionInput").val(),
+                description: $("#newSuiteDescriptionInput").val(),
+                projectId: $("#newSuiteModalProjectId").text()
+            });
+        }
+
+        function setNewSuitePopupProgressBarVisible(isVisible) {
+            var progressBar = $("#createSuitePopupProgressBar");
+            if (isVisible) {
+                progressBar.show();
+            } else {
+                progressBar.hide();
+            }
+        }
+
+
+        function showNewSuiteModalSuccessMessage(isHidePopup, message) {
+            var messageElement = $("#successCreateSuiteModalMessage");
+            messageElement.text(message);
+            messageElement.show();
+            window.setTimeout(function () {
+                messageElement.hide();
+                if (isHidePopup) {
+                    $("#newSuiteModal").modal('hide');
+                    initProjectInfo();
+                }
+            }, 1000);
+        }
+
+        function showNewSuiteModalErrorMessage(message) {
+            var messageElement = $("#failedCreateSuiteModalMessage");
+            messageElement.text(message);
+            messageElement.show();
+            window.setTimeout(function () {
+                messageElement.hide();
+            }, 2000);
+        }
+
+        function sendSaveSuite(suite) {
+            setNewSuitePopupProgressBarVisible(true);
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8080/api/v1/suites/create',
+                data: JSON.stringify(suite),
+                contentType: 'application/json; charset=UTF-8',
+                success: function (data) {
+                    setNewSuitePopupProgressBarVisible(false);
+                    showNewSuiteModalSuccessMessage(true, "Suite successfully deleted");
+                },
+                error: function (error) {
+                    setNewSuitePopupProgressBarVisible(false);
+                    showNewSuiteModalErrorMessage("Error while delete suite. Please try again.");
+                }
+            });
+        }
+
+        function setNewSuiteModalData() {
+            $("#newSuiteModalProjectId").text(currentProject.id);
+            $("#newSuiteNameInput").val("");
+            $("#newSuiteShortDescriptionInput").val("");
+            $("#newSuiteDescriptionInput").val("");
+        }
+
+        $(document).ready(function () {
+            initProjectInfo();
+        });
+
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="index.html">Lite TMS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <span class="nav-link" style="font-weight: 600; color: #007bff"
+                      id="navbarProjectName">Metahash project</span>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="#">Tests and suites</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" id="runsLink" href="runs.html">Runs</a>
+            </li>
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <span style="padding-left: 30px; padding-right: 20px">Mikhail Sidelnikov</span>
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Logout</button>
+        </form>
+
+    </div>
+</nav>
+
+<div style="margin: 30px">
+    <div class="alert alert-danger" style="display: none" role="alert" id="errorMessage">
+
+    </div>
+    <div class="progress" id="loadingDataProgressBar" style="display: none;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar"
+             aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+    </div>
+
+
+    <div style="padding-top: 20px; padding-left: 20px;font-size: 14px; ">
+        <div class="row">
+            <div class="col-5">
+                <div class="list-group" id="suitesList">
+                </div>
+                <button style="margin-top: 30px" id="newSuiteButton" type="button" class="btn btn-outline-primary"
+                        data-toggle="modal"
+                        data-target="#newSuiteModal"
+                        onclick="setNewSuiteModalData()">Add suite
+                </button>
+            </div>
+            <div class="col-6" id="casesContainer">
+                <div class="list-group" id="casesList">
+                </div>
+                <button style="margin-top: 30px" id="newCaseButton" type="button" class="btn btn-outline-success"
+                        data-toggle="modal"
+                        data-target="#newCaseModal">Add test case
+                </button>
+            </div>
+
+
+        </div>
+
+        <div class="row" style="padding-top: 30px; display: none" id="newButtonsContainer">
+            <div class="col-5">
+
+            </div>
+            <div class="col-6">
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="newSuiteModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="suiteModalLabel">Create new test suite</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="newSuiteModalProjectId" style="display: none"></div>
+                <h6>Suite name:</h6>
+                <input type="text" class="form-control" id="newSuiteNameInput" aria-describedby="basic-addon3"
+                       placeholder="Enter your suite name here"/>
+                <hr>
+                <h6>Short description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          id="newSuiteShortDescriptionInput"
+                          placeholder="Enter your suite short description here"></textarea>
+
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          id="newSuiteDescriptionInput"
+                          placeholder="Enter your suite description here"></textarea>
+            </div>
+            <div class="modal-alerts">
+                <div class="alert alert-success alert-dismissible" role="alert" id="successCreateSuiteModalMessage"
+                     style="display: none">
+                    Suite successfully created.
+                </div>
+                <div class="alert alert-danger alert-dismissible" role="alert" id="failedCreateSuiteModalMessage"
+                     style="display: none">
+                    Error while create suite.
+                </div>
+            </div>
+            <div class="progress" id="createSuitePopupProgressBar" style="display: none;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar"
+                     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="saveNewSuite()">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade bd-example-modal-lg" id="editSuiteModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit test suite</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="editModalSuiteId" style="display: none"></div>
+                <h6>Suite name:</h6>
+                <input type="text" class="form-control" id="editSuiteNameInput" aria-describedby="basic-addon3"
+                       placeholder="Enter your suite name here"/>
+                <hr>
+                <h6>Short description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          id="editSuiteShortDescriptionInput"
+                          placeholder="Enter your suite short description here"></textarea>
+
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          id="editSuiteDescriptionInput"
+                          placeholder="Enter your suite description here"></textarea>
+            </div>
+            <div class="modal-alerts">
+                <div class="alert alert-success alert-dismissible" role="alert" id="successEditSuiteModalMessage"
+                     style="display: none">
+                    Suite successfully updated.
+                </div>
+                <div class="alert alert-danger alert-dismissible" role="alert" id="failedEditSuiteModalMessage"
+                     style="display: none">
+                    Error while update suite.
+                </div>
+            </div>
+            <div class="progress" id="editSuitePopupProgressBar" style="display: none;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar"
+                     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="deleteSuite()">Delete suite</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="initProjectInfo()">Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveUpdatedSuite()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade bd-example-modal-lg" id="newCaseModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="caseModalLabel">Create new test case</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Case info:</h6>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Priority
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Critical</a>
+                        <a class="dropdown-item" href="#">Medium</a>
+                        <a class="dropdown-item" href="#">Low</a>
+                    </div>
+                </div>
+                <div class="btn-group" style="margin-left: 20px">
+                    <button type="button" class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        Type
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">Automated</a>
+                        <a class="dropdown-item" href="#">Manual</a>
+                    </div>
+                </div>
+                <hr>
+                <h6>Requirement references:</h6>
+                <div>
+                    <a style="margin-top: 5px" href="http://ya.ru">Требования: Поиск</a>
+                    <div style="float: right; padding-right: 150px">
+                        <button type="button" class="btn btn-info btn-sm">Edit</button>
+                        <button type="button" class="btn btn-danger btn-sm">Delete</button>
+                    </div>
+
+                </div>
+
+                <div style="margin-top: 20px" class="input-group input-group-sm">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text" id="">Reference link</span>
+                    </div>
+                    <input type="text" class="form-control" placeholder="Url"/>
+                    <input type="text" class="form-control" placeholder="Display value"/>
+                </div>
+                <button type="button" class="btn btn-primary btn-sm" style="margin-top: 10px">Add reference</button>
+                <hr>
+                <h6>Case name:</h6>
+                <input type="text" class="form-control" aria-describedby="basic-addon3"
+                       placeholder="Enter your test case name here"/>
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          placeholder="Enter your test case description here"></textarea>
+                <hr>
+                <h6>Preconditions:</h6>
+                <textarea class="form-control" aria-label="With textarea"
+                          placeholder="Enter your test case preconditions here"></textarea>
+                <hr>
+                <h6>Steps:</h6>
+                <table class="table table-bordered">
+                    <thead class="thead-light">
+                    <tr>
+                        <th class="text-center" style="width: 50%" scope="col">Step</th>
+                        <th class="text-center" style="width: 50%" scope="col">Expected Result</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Логинимся в сервис под пользователем admin/amdin</td>
+                        <td>Пользователь залогинен в системе: в header отображается логотип пользователя</td>
+                    </tr>
+                    <tr>
+                        <td><textarea class="form-control" aria-label="With textarea"
+                                      placeholder="Enter step here"></textarea></td>
+                        <td><textarea class="form-control" aria-label="With textarea"
+                                      placeholder="Enter expected result here"></textarea></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <button type="button" class="btn btn-primary btn-sm">Add step</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+</body>
+</html>

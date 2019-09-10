@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Lite TMS</title>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <style>
+        .project-card {
+            width: 50rem;
+        }
+
+        .edit-project-button {
+            float: right;
+        }
+
+        #newProjectButton {
+            margin-top: 20px;
+        }
+
+        .modal-alerts {
+            margin: 20px;
+        }
+
+        body {
+            font-family: "Myriad Set Pro","Helvetica Neue","Helvetica","Arial","sans-serif";
+        }
+    </style>
+
+
+    <script type="text/javascript">
+
+        function setLoadingProjectsProgressBarVisible(isVisible) {
+            var progressBar = $("#loadingProjectsProgressBar");
+            if (isVisible) {
+                progressBar.show();
+            } else {
+                progressBar.hide();
+            }
+        }
+
+        function showErrorMessage(message) {
+            $("#errorMessage").text(message);
+            window.setTimeout(function () {
+                $("#errorMessage").hide();
+            }, 4000);
+        }
+
+        function setEditProjectModalData(project) {
+            $("#editProjectNameInput").val(project.name);
+            $("#editProjectShortDescriptionInput").val(project.shortDescription);
+            $("#editProjectDescriptionInput").val(project.description);
+            $("#editModalProjectId").text(project.id);
+        }
+
+
+        function clearCreateProjectModalData() {
+            $("#newProjectNameInput").val("");
+            $("#newProjectShortDescriptionInput").val("");
+            $("#newProjectDescriptionInput").val("");
+        }
+
+        function showProjects(projects) {
+            var projectsContainer = $("#projectsContainer");
+            projectsContainer.empty();
+            $.each(projects, function (index, project) {
+                var cardBase = $("<div></div>").addClass("card").addClass("project-card").css("margin-bottom", "10px");
+                var carBody = $("<div></div>").addClass("card-body");
+                carBody.append($("<h5></h5>").addClass("card-title").text(project.name));
+                if (project.shortDescription !== undefined && project.shortDescription.length > 0) {
+                    carBody.append($("<h6></h6>").addClass("card-subtitle").addClass("mb-2").addClass("text-muted").text(project.shortDescription));
+                }
+                var description = "No description";
+                if (project.description !== undefined && project.description.length > 0) {
+                    description = project.description;
+                }
+                carBody.append($("<p></p>").addClass("card-text").text(description));
+                carBody.append($("<p></p>").addClass("card-text").text("Created at : " + project.createTime));
+                carBody.append($("<a></a>").addClass("card-link").attr("href", "cases.html?projectId=" + project.id).text("Test cases"));
+                carBody.append($("<a></a>").addClass("card-link").attr("href", "runs.html?projectId=" + project.id).text("Test runs"));
+                carBody.append(
+                    $("<button></button>")
+                        .addClass("btn")
+                        .addClass("btn-info")
+                        .addClass("btn-sm")
+                        .addClass("edit-project-button")
+                        .attr("data-toggle", "modal")
+                        .attr("data-target", "#editProjectModal")
+                        .text("Edit")
+                        .on("click", function (e) {
+                            e.preventDefault();
+                            setEditProjectModalData(project);
+                        })
+                );
+                cardBase.append(carBody);
+                projectsContainer.append(cardBase);
+            });
+        }
+
+        function updateProject(project) {
+            setEditPopupProgressBarVisible(true);
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8080/api/v1/projects/update',
+                data: JSON.stringify(project),
+                contentType :'application/json; charset=UTF-8',
+                success: function (data) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditProjectSuccessMessage(false, "Project successfully updated");
+                },
+                error: function (error) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditProjectErrorMessage("Error while update project. Try again.");
+                }
+            });
+        }
+
+        function showEditProjectErrorMessage(message) {
+            var messageElement = $("#failedEditProjectModalMessage");
+            messageElement.text(message);
+            messageElement.show();
+            window.setTimeout(function () {
+                messageElement.hide();
+            }, 2000);
+        }
+
+        function showEditProjectSuccessMessage(isHidePopup, message) {
+            var messageElement = $("#successEditProjectModalMessage");
+            messageElement.text(message);
+            messageElement.show();
+            window.setTimeout(function () {
+                messageElement.hide();
+                if (isHidePopup) {
+                    $("#editProjectModal").modal('hide');
+                    initProjects();
+                }
+            }, 1000);
+        }
+
+        function saveChanges() {
+            updateProject({
+                name: $("#editProjectNameInput").val(),
+                shortDescription: $("#editProjectShortDescriptionInput").val(),
+                description: $("#editProjectDescriptionInput").val(),
+                id: $("#editModalProjectId").text()
+            });
+        }
+
+        function deleteProject() {
+            sendDeleteProject({
+                name: $("#editProjectNameInput").val(),
+                shortDescription: $("#editProjectShortDescriptionInput").val(),
+                description: $("#editProjectDescriptionInput").val(),
+                id: $("#editModalProjectId").text()
+            });
+        }
+
+        function setEditPopupProgressBarVisible(isVisible) {
+            var progressBar = $("#editPopupProgressBar");
+            if (isVisible) {
+                progressBar.show();
+            } else {
+                progressBar.hide();
+            }
+        }
+
+        function setCreatePopupProgressBarVisible(isVisible) {
+            var progressBar = $("#createProjectPopupProgressBar");
+            if (isVisible) {
+                progressBar.show();
+            } else {
+                progressBar.hide();
+            }
+        }
+
+        function sendDeleteProject(project) {
+            setEditPopupProgressBarVisible(true);
+            $.ajax({
+                type: 'post',
+                url: 'http://localhost:8080/api/v1/projects/delete',
+                data: JSON.stringify(project),
+                contentType :'application/json; charset=UTF-8',
+                success: function (data) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditProjectSuccessMessage(true, "Project successfully deleted");
+                },
+                error: function (error) {
+                    setEditPopupProgressBarVisible(false);
+                    showEditProjectErrorMessage("Error while delete project. Please try again.");
+                }
+            });
+
+        }
+
+        function saveNewProject() {
+            var projectName = $("#newProjectNameInput").val();
+            var projectShortDescription = $("#newProjectShortDescriptionInput").val();
+            var projectDescription = $("#newProjectDescriptionInput").val();
+            var project = {};
+            project.name = projectName;
+            project.shortDescription = projectShortDescription;
+            project.description = projectDescription;
+            sendSaveNewProject(project);
+        }
+
+        function sendSaveNewProject(project) {
+            setCreatePopupProgressBarVisible(true);
+            $.ajax({
+                type: "POST",
+                url: 'http://localhost:8080/api/v1/projects/create',
+                contentType :'application/json; charset=UTF-8',
+                data: JSON.stringify(project),
+                success: function (data) {
+                    setCreatePopupProgressBarVisible(false);
+                    showCreateProjectSuccessMessage(true);
+                },
+                error: function (error) {
+                    setCreatePopupProgressBarVisible(false);
+                    showCreateProjectErrorMessage();
+                }
+            });
+        }
+
+        function showCreateProjectErrorMessage() {
+            $("#failedCreateProjectModalMessage").show();
+            window.setTimeout(function () {
+                $("#failedCreateProjectModalMessage").hide();
+            }, 4000);
+        }
+
+        function showCreateProjectSuccessMessage(isHidePopup) {
+            $("#successCreateProjectModalMessage").show();
+            window.setTimeout(function () {
+                $("#successCreateProjectModalMessage").hide();
+                if (isHidePopup) {
+                    $("#newProjectModal").modal('hide');
+                    initProjects();
+                }
+            }, 1000);
+        }
+
+        function getProjects() {
+            setLoadingProjectsProgressBarVisible(true);
+            var projects = undefined;
+            $.ajax({
+                type: 'get',
+                url: 'http://localhost:8080/api/v1/projects/get_projects',
+                async: false,
+                dataType: 'text',
+                cache: false,
+                success: function (data) {
+                    setLoadingProjectsProgressBarVisible(false);
+                    projects = jQuery.parseJSON(data);
+                },
+                error: function (error) {
+                    setLoadingProjectsProgressBarVisible(false);
+                    showErrorMessage("Error while get projects. Please, try to refresh your page or check requests in console.");
+                }
+            });
+            return projects;
+        }
+
+
+        function initProjects() {
+            var projects = getProjects();
+            if (projects !== undefined) {
+                showProjects(projects);
+            }
+        }
+
+        $(document).ready(function () {
+            initProjects();
+        });
+
+
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="index.html">Lite TMS</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+        </ul>
+
+        <form class="form-inline my-2 my-lg-0">
+            <span style="padding-left: 30px; padding-right: 20px">Mikhail Sidelnikov</span>
+            <button class="btn btn-secondary my-2 my-sm-0" type="submit">Logout</button>
+        </form>
+
+    </div>
+</nav>
+
+<div style="margin: 30px">
+    <div class="alert alert-danger" style="display: none" role="alert" id="errorMessage">
+
+    </div>
+    <div class="progress" id="loadingProjectsProgressBar" style="display: none;">
+        <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar"
+             aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+    </div>
+
+    <div style="padding-top: 10px; font-size: 15px" id="projectsContainer">
+    </div>
+
+    <div>
+        <button id="newProjectButton" type="button" class="btn btn-primary" data-toggle="modal"
+                data-target="#newProjectModal" onclick="clearCreateProjectModalData()">Add new project
+        </button>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="newProjectModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newProjectModalTitle">Create New Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Project name:</h6>
+                <input type="text" class="form-control" id="newProjectNameInput" aria-describedby="basic-addon3"
+                       placeholder="Enter your project name here"/>
+                <hr>
+                <h6>Short description:</h6>
+                <input type="text" class="form-control" id="newProjectShortDescriptionInput"
+                       aria-describedby="basic-addon3"
+                       placeholder="Enter your project short description here."/>
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea" id="newProjectDescriptionInput"
+                          placeholder="Enter your project description here"></textarea>
+            </div>
+            <div class="modal-alerts">
+                <div class="alert alert-success alert-dismissible" role="alert" id="successCreateProjectModalMessage"
+                     style="display: none">
+                    Project successfully created.
+                </div>
+                <div class="alert alert-danger alert-dismissible" role="alert" id="failedCreateProjectModalMessage"
+                     style="display: none">
+                    Error while create project.
+                </div>
+            </div>
+            <div class="progress" id="createProjectPopupProgressBar" style="display: none;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar"
+                     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="initProjects()">Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveNewProject()">Create project</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade bd-example-modal-lg" id="editProjectModal" tabindex="-1" role="dialog"
+     aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProjectModalTitle">Edit Project</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="editModalProjectId" style="display: none"></div>
+                <h6>Project name:</h6>
+                <input type="text" class="form-control" id="editProjectNameInput" aria-describedby="basic-addon3"
+                       placeholder="Enter your project name here"/>
+                <hr>
+                <h6>Short description:</h6>
+                <input type="text" class="form-control" id="editProjectShortDescriptionInput"
+                       aria-describedby="basic-addon3"
+                       placeholder="Enter your project short description here."/>
+                <hr>
+                <h6>Description:</h6>
+                <textarea class="form-control" aria-label="With textarea" id="editProjectDescriptionInput"
+                          placeholder="Enter your project description here"></textarea>
+            </div>
+            <div class="modal-alerts">
+                <div class="alert alert-success alert-dismissible" role="alert" id="successEditProjectModalMessage"
+                     style="display: none">
+                    Project successfully updated.
+                </div>
+                <div class="alert alert-danger alert-dismissible" role="alert" id="failedEditProjectModalMessage"
+                     style="display: none">
+                    Error while update project.
+                </div>
+            </div>
+            <div class="progress" id="editPopupProgressBar" style="display: none;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated active" role="progressbar"
+                     aria-valuenow="75" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="deleteProject()">Delete project</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="initProjects()">Close
+                </button>
+                <button type="button" class="btn btn-primary" onclick="saveChanges()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
